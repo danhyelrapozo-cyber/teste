@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instrumentos de Avaliação Psicológica (VLQ, DASS-21, PANAS)</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        .section { margin-bottom: 30px; }
+        .question { margin-bottom: 20px; background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #e1e8ed; }
+        label { display: block; margin-top: 8px; cursor: pointer; }
+        input[type="number"], select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #3498db; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; display: block; width: 100%; margin-top: 20px; }
+        button:hover { background-color: #2980b9; }
+        .results { background: #e8f8f5; border: 1px solid #a3e4d7; padding: 20px; border-radius: 6px; margin-top: 20px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Avaliação Integrada: VLQ, DASS-21 e PANAS</h1>
+    <p>Responda aos itens abaixo considerando o seu comportamento e sentimentos na <strong>última semana</strong>.</p>
+
+    <form id="assessmentForm">
+        
+        <!-- SEÇÃO VLQ -->
+        <div class="section">
+            <h2>1. VLQ - Questionário de Valores de Vida</h2>
+            <p><em>Para cada domínio, avalie a Importância (1 a 10) e a Consistência das ações (1 a 10).</em></p>
+            
+            <div class="question">
+                <label><strong>Domínio 1: Relações Familiares</strong></label>
+                Importância (1-10): <input type="number" name="vlq_imp_1" min="1" max="10" required>
+                Consistência (1-10): <input type="number" name="vlq_con_1" min="1" max="10" required>
+            </div>
+            <div class="question">
+                <label><strong>Domínio 2: Casamento / Relacionamento Afetivo</strong></label>
+                Importância (1-10): <input type="number" name="vlq_imp_2" min="1" max="10" required>
+                Consistência (1-10): <input type="number" name="vlq_con_2" min="1" max="10" required>
+            </div>
+            <div class="question">
+                <label><strong>Domínio 3: Trabalho / Atividade Laboral</strong></label>
+                Importância (1-10): <input type="number" name="vlq_imp_3" min="1" max="10" required>
+                Consistência (1-10): <input type="number" name="vlq_con_3" min="1" max="10" required>
+            </div>
+        </div>
+
+        <!-- SEÇÃO DASS-21 -->
+        <div class="section">
+            <h2>2. DASS-21 (Depressão, Ansiedade e Estresse)</h2>
+            <p><em>Escala de 0 (Não se aplicou) a 3 (Aplicou-se muito / na maior parte do tempo).</em></p>
+            
+            <div class="question">
+                <label>1. Achei difícil me acalmar (Estresse)</label>
+                <select name="dass_1"><option value="0">0 - Não</option><option value="1">1 - Um pouco</option><option value="2">2 - Bastante</option><option value="3">3 - Muito</option></select>
+            </div>
+            <div class="question">
+                <label>2. Senti minha boca seca (Ansiedade)</label>
+                <select name="dass_2"><option value="0">0 - Não</option><option value="1">1 - Um pouco</option><option value="2">2 - Bastante</option><option value="3">3 - Muito</option></select>
+            </div>
+            <div class="question">
+                <label>3. Não consegui vivenciar nenhum sentimento positivo (Depressão)</label>
+                <select name="dass_3"><option value="0">0 - Não</option><option value="1">1 - Um pouco</option><option value="2">2 - Bastante</option><option value="3">3 - Muito</option></select>
+            </div>
+        </div>
+
+        <!-- SEÇÃO PANAS -->
+        <div class="section">
+            <h2>3. PANAS (Afeto Positivo e Negativo)</h2>
+            <p><em>Escala de 1 (Muito pouco ou nada) a 5 (Extremamente).</em></p>
+            
+            <div class="question">
+                <label>1. Interessado(a) (Positivo)</label>
+                <select name="panas_pos_1"><option value="1">1 - Nada</option><option value="2">2 - Um pouco</option><option value="3">3 - Moderadamente</option><option value="4">4 - Bastante</option><option value="5">5 - Extremamente</option></select>
+            </div>
+            <div class="question">
+                <label>2. Angustiado(a) (Negativo)</label>
+                <select name="panas_neg_1"><option value="1">1 - Nada</option><option value="2">2 - Um pouco</option><option value="3">3 - Moderadamente</option><option value="4">4 - Bastante</option><option value="5">5 - Extremamente</option></select>
+            </div>
+        </div>
+
+        <button type="button" onclick="calcularResultados()">Enviar e Ver Resultado</button>
+    </form>
+
+    <div id="resultsArea" class="results">
+        <h2>Resultado da Avaliação</h2>
+        <div id="resultContent"></div>
+    </div>
+</div>
+
+<script>
+function calcularResultados() {
+    const form = document.forms['assessmentForm'];
+    
+    // Cálculo simplificado do VLQ (Média dos produtos Importância x Consistência)
+    let somaVLQ = 0;
+    for(let i=1; i<=3; i++) {
+        let imp = parseFloat(form['vlq_imp_' + i].value) || 0;
+        let con = parseFloat(form['vlq_con_' + i].value) || 0;
+        somaVLQ += (imp * con);
+    }
+    let escoreCompostoVLQ = (somaVLQ / 3).toFixed(2);
+
+    // Cálculo DASS-21 (Soma x 2 conforme diretrizes)
+    let dass1 = parseInt(form['dass_1'].value) * 2;
+    let dass2 = parseInt(form['dass_2'].value) * 2;
+    let dass3 = parseInt(form['dass_3'].value) * 2;
+
+    // Cálculo PANAS
+    let panasPos = parseInt(form['panas_pos_1'].value);
+    let panasNeg = parseInt(form['panas_neg_1'].value);
+
+    // Exibição
+    let html = `
+        <p><strong>Escore Composto de Vida Valorada (VLQ - Amostra):</strong> ${escoreCompostoVLQ} (Escala de 1 a 100)</p>
+        <p><strong>DASS-21 (Indicadores parciais):</strong> Estresse: ${dass1} | Ansiedade: ${dass2} | Depressão: ${dass3}</p>
+        <p><strong>PANAS (Indicadores parciais):</strong> Afeto Positivo: ${panasPos} | Afeto Negativo: ${panasNeg}</p>
+        <p><em>Nota: Este resultado automatizado tem caráter preliminar e deve ser integrado a uma avaliação clínica profissional[cite: 1, 8, 15].</em></p>
+    `;
+
+    document.getElementById('resultContent').innerHTML = html;
+    document.getElementById('resultsArea').style.display = 'block';
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
